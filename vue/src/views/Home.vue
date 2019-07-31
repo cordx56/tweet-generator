@@ -14,8 +14,10 @@
       b-card-text {{ errorMsg }}
     b-card(v-if="loadingMsg",header="読み込み中",border-variant="secondary",header-bg-variant="secondary",header-text-variant="white",align="center")
       b-card-text {{ loadingMsg }}
-    b-card(v-if="$route.query.success",header="生成成功",border-variant="success",header-bg-variant="success",header-text-variant="white",align="center")
+    b-card(v-if="$route.query.success",header="学習成功",border-variant="success",header-bg-variant="success",header-text-variant="white",align="center")
       b-card-text {{ $route.query.success }}
+    b-card(v-if="$route.query.error",header="学習失敗",border-variant="danger",header-bg-variant="danger",header-text-variant="white",align="center")
+      b-card-text {{ $route.query.error }}
 
     b-form.mt-3(@submit="onGenerate")
       b-form-group(label="アカウント名: ")
