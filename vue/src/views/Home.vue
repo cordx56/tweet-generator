@@ -4,7 +4,7 @@
     p 人のツイートを学習して本人っぽい文章を生成するが……
     p マルコフ連鎖によるツイート自動生成プログラム
     p This program uses <a href="https://github.com/jsvine/markovify" target="_blank">jsvine/markovify</a>.
-    p Detail: <a href="https://github.com/cordx56/tweet-gen" target="_blank">cordx56/tweet-gen</a>.
+    p Detail: <a href="https://github.com/cordx56/tweet-generator" target="_blank">cordx56/tweet-generator</a>.
 
     b-card(v-if="sentence",header="生成結果",border-variant="info",header-bg-variant="info",header-text-variant="white",align="center")
       b-card-text {{ sentence }}
