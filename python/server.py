@@ -34,7 +34,7 @@ def twitterAuthAndGen():
         twt = TwitterTools(twitterKeys["CK"], twitterKeys["CS"], token["oauth_token"], token["oauth_token_secret"])
         params = { "screen_name": token["screen_name"], "trim_user": 1 }
         filepath = os.path.join("./chainfiles", token["screen_name"] + ".json")
-        if (os.path.getmtime(filepath) - datetime.now().timestamp() < 60 * 60 * 24):
+        if (os.path.isfile(filepath) and os.path.getmtime(filepath) - datetime.now().timestamp() < 60 * 60 * 24):
             errMsg = "You can generate Markov chain only once per 24 hours."
         else:
             exportModel.generateAndExport(exportModel.loadTwitterAPI(twt, params), filepath)
