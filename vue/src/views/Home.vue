@@ -16,6 +16,7 @@
       b-card-text {{ loadingMsg }}
     b-card(v-if="$route.query.success",header="学習成功",border-variant="success",header-bg-variant="success",header-text-variant="white",align="center")
       b-card-text {{ $route.query.success }}
+      b-card-text いっぱい遊んでいってね、楽しんでもらえたらうれしいな。ほめてもらえるともっとうれしいかも……💕
     b-card(v-if="$route.query.error",header="学習失敗",border-variant="danger",header-bg-variant="danger",header-text-variant="white",align="center")
       b-card-text {{ $route.query.error }}
 
