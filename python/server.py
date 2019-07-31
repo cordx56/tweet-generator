@@ -43,9 +43,9 @@ def twitterAuthAndGen():
         print(e)
         errMsg = "Failed to generate your Markov chain. Please retry a few minutes later."
     if successMsg:
-        return redirect("/" + token["screen_name"] + "?success=" + urllib.parse.quote(successMsg))
+        return redirect("https://markov.cordx.net/" + token["screen_name"] + "?success=" + urllib.parse.quote(successMsg))
     else:
-        return redirect("/?error=" + urllib.parse.quote(errMsg))
+        return redirect("https://markov.cordx.net/?error=" + urllib.parse.quote(errMsg))
 
 
 # main api
