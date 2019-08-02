@@ -67,8 +67,11 @@ def textGen(screenName = None):
         with open("./chainfiles/" + screenName + ".json") as f:
             textModel = markovify.Text.from_json(f.read())
         reqJson = request.json
-        if reqJson is not None and reqJson["startWith"] and 0 < len(reqJson["startWith"]):
-            startWithStr = mec.parse(reqJson["startWith"])
+        if reqJson is not None and reqJson["startWith"] and 0 < len(reqJson["startWith"].strip()):
+            startWithStr = mec.parse(reqJson["startWith"]).strip().split()
+            if textModel.state_size < len(startWithStr):
+                startWithStr = startWithStr[0:textModel.state_size]
+            startWithStr = " ".join(startWithStr)
             try:
                 sentence = textModel.make_sentence_with_start(startWithStr, tries = 100)
             except KeyError:
