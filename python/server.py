@@ -77,6 +77,7 @@ def textGen(screenName = None):
             sentence = textModel.make_short_sentence(int(reqJson["length"]), tries = 100)
         else:
             sentence = textModel.make_sentence(tries = 100)
+        print("@" + screenName + ", Request: " + str(reqJson) + ", Sentence:" + str(sentence))  # Log
         if sentence is not None:
             sentence = "".join(sentence.split())
             tweetLink = 'https://twitter.com/intent/tweet?text=' + urllib.parse.quote(sentence) + \
