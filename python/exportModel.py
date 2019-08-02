@@ -31,7 +31,7 @@ def loadTwitterAPI(twt, params):
 
 
 def generateAndExport(src, dest, state_size = 3):
-    src = src.replace("?", "？").replace("!", "！").replace("，", "、").replace("．", "。")  # .replace("。", "。\n")
+    src = src.replace("?", "？").replace("!", "！").replace("，", "、").replace("．", "。").replace("。", "。\n")
     data = [mecabW.parse(s) for s in src.split("\n") if s != ""]
     joinedData = "".join(data)
     modeljson = markovify.NewlineText(joinedData, state_size = state_size).to_json()
