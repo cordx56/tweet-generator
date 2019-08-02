@@ -36,7 +36,7 @@ def twitterAuthAndGen():
         token = twt.oauth.fetch_access_token("https://api.twitter.com/oauth/access_token")
         twt = TwitterTools(twitterKeys["CK"], twitterKeys["CS"], token["oauth_token"], token["oauth_token_secret"])
         params = { "screen_name": token["screen_name"], "trim_user": 1 }
-        filepath = os.path.join("./chainfiles", token["screen_name"] + ".json")
+        filepath = os.path.join("./chainfiles", token["screen_name"].lower() + ".json")
         if (os.path.isfile(filepath) and datetime.datetime.now().timestamp() - os.path.getmtime(filepath) < 60 * 60 * 24):
             errMsg = "You can generate Markov chain only once per 24 hours."
         else:
@@ -56,7 +56,7 @@ def twitterAuthAndGen():
 def textGen(screenName = None):
     if screenName is None:
         return jsonify({ "status": False, "message": "ScreenName not specified!" }), 400
-    screenName = os.path.basename(screenName)
+    screenName = os.path.basename(screenName).lower()
     if screenName[0] == '@':
         screenName = screenName[1:]
     if request.method == "POST" and request.json is None:
