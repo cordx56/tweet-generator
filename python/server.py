@@ -59,7 +59,7 @@ def textGen(screenName = None):
     if request.method == "POST" and request.json is None:
         return jsonify({ "status": False, "message": "Invalid request." }), 400
     if not os.path.isfile("./chainfiles/" + screenName + ".json"):
-        return jsonify({ "status": False, "message": "Leaned model file not found." }), 404
+        return jsonify({ "status": False, "message": "Leaned model file not found. まずはじめにツイートを学習させてください。" }), 404
     try:
         with open("./chainfiles/" + screenName + ".json") as f:
             textModel = markovify.Text.from_json(f.read())
@@ -76,7 +76,7 @@ def textGen(screenName = None):
                 '&url=' + urllib.parse.quote("https://markov.cordx.net/" + screenName)
             return jsonify({ "status": True, "sentence": sentence, "tweetLink": tweetLink })
         else:
-            return jsonify({ "status": False, "message": "生成失敗。複数回試してみてください。" })
+            return jsonify({ "status": False, "message": "生成失敗。複数回試してみてください。" }), 500
     except Exception as e:
         print(e)
         return jsonify({ "status": False, "message": "Unknown error." }), 500
