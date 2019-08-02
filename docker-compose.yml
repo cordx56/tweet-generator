@@ -7,7 +7,7 @@ services:
       - ./chainfiles:/scripts/chainfiles
       - ./log/uwsgi:/scripts/log/uwsgi
     environment:
-      - TZ: Asia/Tokyo
+      TZ: Asia/Tokyo
     env_file:
       - ./python/twitter.env
     restart: always
@@ -29,7 +29,7 @@ services:
     ports:
       - 8085:80
     environment:
-      - TZ: Asia/Tokyo
+      TZ: Asia/Tokyo
     restart: always
   htmlbBuilder:
     image: node:12
