@@ -67,7 +67,7 @@ export default {
         }
         else this.errorMsg = response.data.message
         this.loadingMsg = ""
-        this.$router.push({ path: "/" + this.genForm.screenName })
+        this.$router.replace({ path: "/" + this.genForm.screenName })
       }).catch((error) => {
         if (error.response.data && error.response.data.message) this.errorMsg = error.response.data.message
         else this.errorMsg = String(error)
