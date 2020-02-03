@@ -11,7 +11,7 @@ mecab-python3 = "*"
 markovify = "*"
 flask = "*"
 requests-oauthlib = "*"
-uwsgi = "*"
+gunicorn = "==20.0.4"
 
 [requires]
 python_version = "3.7"
