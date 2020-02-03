@@ -31,6 +31,7 @@
         b-button(type="submit",variant="primary") 生成！
 
     h2.mt-4 ツイートを学習させる
+    p お知らせ: 現在多数の生成リクエストがあり、Twitter APIの制限をかけられている場合があります。生成に失敗する場合、時間をおいてもう一度ご利用ください。
     p
       a(href="/pyapi/tw/authLink?callback=https://markov.cordx.net/pyapi/tw/authAndGen")
         img(src="/resources/sign-in-with-twitter-link.png")/
