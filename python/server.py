@@ -36,7 +36,7 @@ def twitterAuthAndGen():
         token = twt.oauth.fetch_access_token("https://api.twitter.com/oauth/access_token")
         twt = TwitterTools(twitterKeys["CK"], twitterKeys["CS"], token["oauth_token"], token["oauth_token_secret"])
         params = { "screen_name": token["screen_name"], "trim_user": 1 }
-        filepath = os.path.join("./chainfiles", token["screen_name"].lower() + ".json")
+        filepath = os.path.join("./chainfiles", os.path.basename(token["screen_name"].lower()) + ".json")
         if (os.path.isfile(filepath) and datetime.datetime.now().timestamp() - os.path.getmtime(filepath) < 60 * 60 * 24):
             errMsg = "You can generate Markov chain only once per 24 hours."
         else:
@@ -50,6 +50,29 @@ def twitterAuthAndGen():
     else:
         return redirect("https://markov.cordx.net/?error=" + urllib.parse.quote(errMsg))
 
+@app.route("/pyapi/tw/authAndDel")
+def twitterAuthAndDel():
+    global twitterKeys
+    successMsg = None
+    errMsg = None
+    try:
+        twt = TwitterTools(twitterKeys["CK"], twitterKeys["CS"], None, None)
+        twt.oauth.parse_authorization_response(request.url)
+        token = twt.oauth.fetch_access_token("https://api.twitter.com/oauth/access_token")
+        twt = TwitterTools(twitterKeys["CK"], twitterKeys["CS"], token["oauth_token"], token["oauth_token_secret"])
+        filepath = os.path.join("./chainfiles", os.path.basename(token["screen_name"].lower()) + ".json")
+        if os.path.isfile(filepath):
+            os.remove(filepath)
+            successMsg = "Successfully deleted."
+        else:
+            errMsg = "Leaned model file not found. まずはじめにツイートを学習させてください。"
+    except Exception as e:
+        print(e)
+        errMsg = "Failed to delete your Markov chain. Please retry a few minutes later."
+    if successMsg:
+        return redirect("https://markov.cordx.net/" + token["screen_name"] + "?success=" + urllib.parse.quote(successMsg))
+    else:
+        return redirect("https://markov.cordx.net/?error=" + urllib.parse.quote(errMsg))
 
 # main api
 @app.route("/pyapi/genText/<screenName>", methods = ["GET", "POST"])
