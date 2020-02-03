@@ -5,9 +5,10 @@ services:
     volumes:
       - ./python:/scripts
       - ./chainfiles:/scripts/chainfiles
-      - ./log/uwsgi:/scripts/log/uwsgi
+      - ./log/gunicorn:/scripts/log/gunicorn
     environment:
       TZ: Asia/Tokyo
+      PYTHONUNBUFFERED: "TRUE"
     env_file:
       - ./python/twitter.env
     restart: always
@@ -16,7 +17,7 @@ services:
       cd /scripts &&
       pip install pipenv &&
       pipenv install --system &&
-      uwsgi --ini /scripts/uwsgi.ini"
+      gunicorn -c /scripts/gunicorn.py server:app"
   nginxserver:
     image: nginx:1.17
     volumes:
