@@ -36,6 +36,9 @@
       a(href="/pyapi/tw/authLink?callback=https://markov.cordx.net/pyapi/tw/authAndGen")
         img(src="/resources/sign-in-with-twitter-link.png")/
     p ログインしてツイートを学習させると、あなたや他の人もあなたのツイートを生成して遊べるようになります。
+    p
+      b-button(variant="danger",size="sm",href="/pyapi/tw/authLink?callback=https://markov.cordx.net/pyapi/tw/authAndDel",target="_blank") <font-awesome-icon :icon="['fab', 'twitter']"></font-awesome-icon> 学習削除
+    p こちらからあなたの学習済みデータを削除することができます。
 </template>
 
 <script>
