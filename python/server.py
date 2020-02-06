@@ -65,7 +65,7 @@ def twitterAuthAndDel():
             os.remove(filepath)
             successMsg = "Successfully deleted."
         else:
-            errMsg = "Leaned model file not found. まずはじめにツイートを学習させてください。"
+            errMsg = "Learned model file not found. まずはじめにツイートを学習させてください。"
     except Exception as e:
         print(e)
         errMsg = "Failed to delete your Markov chain. Please retry a few minutes later."
@@ -85,7 +85,7 @@ def textGen(screenName = None):
     if request.method == "POST" and request.json is None:
         return jsonify({ "status": False, "message": "Invalid request." }), 400
     if not os.path.isfile("./chainfiles/" + screenName + ".json"):
-        return jsonify({ "status": False, "message": "Leaned model file not found. まずはじめにツイートを学習させてください。" }), 404
+        return jsonify({ "status": False, "message": "Learned model file not found. まずはじめにツイートを学習させてください。" }), 404
     try:
         with open("./chainfiles/" + screenName + ".json") as f:
             textModel = markovify.Text.from_json(f.read())
