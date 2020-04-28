@@ -42,6 +42,7 @@ def twitterAuthAndGen():
         else:
             exportModel.generateAndExport(exportModel.loadTwitterAPI(twt, params), filepath)
             successMsg = token["screen_name"] + "'s Markov chain model was successfully GENERATED!"
+            print("LOG,GENMODEL," + str(datetime.datetime.now()) + "," + token["screen_name"].lower())   # Log
     except Exception as e:
         print(e)
         errMsg = "Failed to generate your Markov chain. Please retry a few minutes later."
@@ -60,10 +61,12 @@ def twitterAuthAndDel():
         twt.oauth.parse_authorization_response(request.url)
         token = twt.oauth.fetch_access_token("https://api.twitter.com/oauth/access_token")
         twt = TwitterTools(twitterKeys["CK"], twitterKeys["CS"], token["oauth_token"], token["oauth_token_secret"])
-        filepath = os.path.join("./chainfiles", os.path.basename(token["screen_name"].lower()) + ".json")
+        screen_name = os.path.basename(token["screen_name"].lower())
+        filepath = os.path.join("./chainfiles", screen_name + ".json")
         if os.path.isfile(filepath):
             os.remove(filepath)
             successMsg = "Successfully deleted."
+            print("LOG,DELMODEL," + str(datetime.datetime.now()) + "," + screen_name)   # Log
         else:
             errMsg = "Learned model file not found. まずはじめにツイートを学習させてください。"
     except Exception as e:
@@ -103,7 +106,8 @@ def textGen(screenName = None):
             sentence = textModel.make_short_sentence(int(reqJson["length"]), tries = 100)
         else:
             sentence = textModel.make_sentence(tries = 100)
-        print("@" + screenName + ", Request: " + str(reqJson) + ", Sentence:" + "".join(str(sentence).split()))  # Log
+        print("@" + screenName + ", Request: " + str(reqJson) + ", Sentence:" + "".join(str(sentence).split()))  # Log1
+        print("LOG,GENTEXT," + str(datetime.datetime.now()) + "," + screenName)  # Log2
         if sentence is not None:
             sentence = "".join(sentence.split())
             tweetLink = 'https://twitter.com/intent/tweet?text=' + urllib.parse.quote(sentence) + \
