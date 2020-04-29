@@ -2,6 +2,7 @@
 import sys
 import re
 import pandas
+import json
 import MeCab
 import markovify
 
@@ -23,6 +24,13 @@ def loadTwitterCSV(filepath):
     data = pandas.read_csv(filepath)
     return "\n".join(filterTweets(data["text"]))
 
+def loadTwitterJS(filepath):
+    with open(filepath) as f:
+        text = f.read()
+    text = text[25:]
+    data = json.loads(text)
+    text = [s["tweet"]["full_text"] for s in data]
+    return "\n".join(filterTweets(text))
 
 def loadTwitterAPI(twt, params):
     tweets = twt.fetchTweetsLoop(params, 100)
@@ -42,7 +50,7 @@ def generateAndExport(src, dest, state_size = 3):
 
 if __name__ == "__main__":
     if len(sys.argv) > 3:
-        learned = generateAndExport(loadTwitterCSV(sys.argv[1]), sys.argv[2], int(sys.argv[3]))
+        learned = generateAndExport(loadTwitterJS(sys.argv[1]), sys.argv[2], int(sys.argv[3]))
     else:
-        learned = generateAndExport(loadTwitterCSV(sys.argv[1]), sys.argv[2])
+        learned = generateAndExport(loadTwitterJS(sys.argv[1]), sys.argv[2])
     print("Exported " + str(learned) + " lines learned data to " + sys.argv[2] + ".")
