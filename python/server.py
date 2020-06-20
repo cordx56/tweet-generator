@@ -110,7 +110,7 @@ def textGen(screenName = None):
         print("LOG,GENTEXT," + str(datetime.datetime.now()) + "," + screenName)  # Log2
         if sentence is not None:
             sentence = "".join(sentence.split())
-            tweetLink = 'https://twitter.com/intent/tweet?text=' + urllib.parse.quote(sentence) + \
+            tweetLink = 'https://twitter.com/intent/tweet?text=' + urllib.parse.quote(sentence + ' #tweetgen') + \
                 '&url=' + urllib.parse.quote("https://markov.cordx.net/" + screenName)
             return jsonify({ "status": True, "sentence": sentence, "tweetLink": tweetLink })
         else:
