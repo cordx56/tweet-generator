@@ -7,4 +7,11 @@ RUN cd ./mecab-ipadic-neologd && ./bin/install-mecab-ipadic-neologd -y -p /var/l
 RUN rm -rf ./mecab-ipadic-neologd
 RUN ln -s /var/lib/mecab/dic /usr/lib/mecab/dic
 
-RUN pip install mecab-python3
+WORKDIR /app
+COPY Pipfile .
+COPY Pipfile.lock .
+RUN pip install pipenv && \
+	pipenv install --system
+COPY . .
+
+CMD gunicorn -c /app/gunicorn.py server:app
