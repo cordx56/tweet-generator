@@ -209,7 +209,9 @@ def add_text_to_image(img, text, font_size, font_color, max_length=1000):
     return img
 
 class GenImageAPIView(APIView):
-    def get(self, request, screen_name):
+    def get(self, request, screen_name=None):
+        if screen_name is None:
+            screen_name = ''
         screen_name = screen_name.lstrip('@')
         img = Image.open('twittercard.png')
         add_text_to_image(img, '@' + screen_name, 100, (255, 0, 0))

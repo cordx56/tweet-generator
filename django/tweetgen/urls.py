@@ -10,5 +10,6 @@ urlpatterns = [
     path('api/v1/tweetgen/genText/<screen_name>', views.GenTextAPIView.as_view()),
 
     # Twitter card image
+    path('api/v1/tweetgen/genImage/', views.GenImageAPIView.as_view()),
     path('api/v1/tweetgen/genImage/<screen_name>', views.GenImageAPIView.as_view()),
 ]
