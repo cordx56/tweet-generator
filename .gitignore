@@ -1,3 +1,4 @@
+/django/font.ttf
 
 /.conf/*
 !/.conf/*.sample

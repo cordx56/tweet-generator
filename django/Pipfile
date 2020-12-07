@@ -15,6 +15,7 @@ mecab-python3 = "*"
 markovify = "*"
 django-cors-headers = "*"
 psycopg2-binary = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.8"

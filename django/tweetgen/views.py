@@ -6,6 +6,7 @@ from django.conf import settings
 from account.models import User
 from django.contrib.auth import login
 from django.shortcuts import redirect
+from django.http import FileResponse
 from .models import GeneratedModel
 
 import logging
@@ -14,6 +15,10 @@ import urllib
 from requests_oauthlib import OAuth1Session
 import MeCab
 import markovify
+
+# Image draw
+import io
+from PIL import Image, ImageDraw, ImageFont
 
 from . import generate_model
 
@@ -119,6 +124,7 @@ class AuthAndDelAPIView(APIView):
 
 class GenTextAPIView(APIView):
     def get(self, request, screen_name):
+        screen_name = screen_name.lstrip('@')
         if User.objects.filter(screen_name=screen_name).exists():
             user = User.objects.get(screen_name=screen_name)
         else:
@@ -187,3 +193,29 @@ class GenTextAPIView(APIView):
                 'tweetLink': tweet_link,
             }
         )
+
+
+def add_text_to_image(img, text, font_size, font_color, max_length=1000):
+    font = ImageFont.truetype("font.ttf", font_size)
+    draw = ImageDraw.Draw(img)
+    if draw.textsize(text, font=font)[0] > max_length:
+        while draw.textsize(text + '…', font=font)[0] > max_length:
+            text = text[:-1]
+        text = text + '…'
+    w, h = img.size
+    position = (w / 2 - draw.textsize(text, font=font)[0] / 2, 300)
+    draw.text(position, text, font_color, font=font)
+
+    return img
+
+class GenImageAPIView(APIView):
+    def get(self, request, screen_name):
+        screen_name = screen_name.lstrip('@')
+        img = Image.open('twittercard.png')
+        add_text_to_image(img, '@' + screen_name, 100, (255, 0, 0))
+        file_obj = io.BytesIO()
+        img.save(file_obj, 'PNG')
+        file_obj.seek(0)
+        fr = FileResponse(file_obj)
+        fr['Content-Type'] = 'image/PNG'
+        return fr
