@@ -169,7 +169,7 @@ class GenTextAPIView(APIView):
                     },
                     status.HTTP_400_BAD_REQUEST
                 )
-        elif request.query_params.get('length') and str(request.query_params['length']).isdecimal():
+        elif request.query_params.get('length') and str(request.query_params['length']).isdecimal() and 0 < int(request.query_params['length']):
             text = markov.make_short_sentence(int(request.query_params['length']), tries=100)
         else:
             text = markov.make_sentence(tries=100)
