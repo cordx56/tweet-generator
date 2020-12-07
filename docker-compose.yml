@@ -1,0 +1,11 @@
+version: "3"
+services:
+  markovserver:
+    build: django
+    volumes:
+      - ./log/gunicorn:/app/log/gunicorn
+    environment:
+      TZ: Asia/Tokyo
+    restart: always
+    ports:
+      - 8000:8000
