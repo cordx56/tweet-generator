@@ -4,8 +4,33 @@ services:
     build: django
     volumes:
       - ./log/gunicorn:/app/log/gunicorn
+    command: >
+      /bin/bash -c "
+      python manage.py migrate &&
+      gunicorn -c /app/gunicorn.py tweet_generator.wsgi"
+    env_file:
+      - .conf/docker.env
     environment:
       TZ: Asia/Tokyo
     restart: always
     ports:
       - 8000:8000
+  nextjs:
+    build: next
+    restart: always
+  nginx:
+    build: nginx
+    ports:
+      - 8085:80
+    environment:
+      TZ: Asia/Tokyo
+    restart: always
+  db:
+    image: postgres:13
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    env_file:
+      - .conf/docker.env
+    environment:
+      TZ: Asia/Tokyo
+    restart: always
