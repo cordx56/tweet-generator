@@ -21,7 +21,7 @@ services:
   nginx:
     build: nginx
     ports:
-      - 8085:80
+      - 8086:80
     environment:
       TZ: Asia/Tokyo
     restart: always
