@@ -51,7 +51,7 @@ class AuthAndGenAPIView(APIView):
             token = twitter_fetch_token(request)
         except Exception as e:
             logger.warning(e)
-            return redirect('/?error_unknown')
+            return redirect('/?error_unknown=true')
         oauth_token = token["oauth_token"]
         oauth_token_secret = token["oauth_token_secret"]
         oauth = OAuth1Session(settings.TWITTER_API_CONKEY, settings.TWITTER_API_CONSEC, oauth_token, oauth_token_secret)
@@ -62,7 +62,7 @@ class AuthAndGenAPIView(APIView):
             tuser = oauth.get('https://api.twitter.com/1.1/users/show.json?screen_name=' + screen_name)
         except Exception as e:
             logger.warning(e)
-            return redirect('/?error_unknown')
+            return redirect('/?error_unknown=true')
         is_protected = tuser.json()['protected']
 
         if User.objects.filter(screen_name=screen_name).exists():
@@ -89,7 +89,7 @@ class AuthAndGenAPIView(APIView):
         if GeneratedModel.objects.filter(user=user).exists():
             genmodel = GeneratedModel.objects.get(user=user)
             if datetime.now().timestamp() - genmodel.date.timestamp() < 60 * 60 * 24:
-                return redirect('/?error_24hour_constraint')
+                return redirect('/?error_24hour_constraint=true')
             GeneratedModel.objects.filter(user=user).delete()
 
         # Generate model
@@ -98,14 +98,14 @@ class AuthAndGenAPIView(APIView):
             model = generate_model.generate_from_tweets(oauth, params)
         except Exception as e:
             logger.warning(e)
-            return redirect('/?error_unknown')
+            return redirect('/?error_unknown=true')
         modeljson = model.to_json()
         genmodel = GeneratedModel()
         genmodel.user = user
         genmodel.model = modeljson
         genmodel.save()
 
-        return redirect('/' + screen_name + '?successfully_generated')
+        return redirect('/' + screen_name + '?successfully_generated=true')
 
 class AuthAndDelAPIView(APIView):
     def get(self, request):
@@ -113,14 +113,14 @@ class AuthAndDelAPIView(APIView):
             token = twitter_fetch_token(request)
         except Exception as e:
             logger.warning(e)
-            return redirect('/?error_unknown')
+            return redirect('/?error_unknown=true')
         twitter_id = int(token['user_id'])
         if User.objects.filter(twitter_id=twitter_id).exists():
             user = User.objects.get(twitter_id=twitter_id)
             if GeneratedModel.objects.filter(user=user).exists():
                 GeneratedModel.objects.filter(user=user).delete()
-                return redirect('/' + '?successfully_deleted')
-        return redirect('/' + '?error_unregistered')
+                return redirect('/' + '?successfully_deleted=true')
+        return redirect('/' + '?error_unregistered=true')
 
 class GenTextAPIView(APIView):
     def get(self, request, screen_name):

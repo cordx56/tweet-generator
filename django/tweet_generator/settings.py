@@ -189,4 +189,5 @@ WEBPAGE_BASE_URL = 'https://tweetgen.cordx.net'
 CORS_ALLOWED_ORIGINS = [
     WEBPAGE_BASE_URL,
     'http://localhost:3000',
+    'http://localhost:8080',
 ]

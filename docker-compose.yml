@@ -15,11 +15,8 @@ services:
     restart: always
     ports:
       - 8000:8000
-  nextjs:
-    build: next
-    restart: always
   nginx:
-    build: nginx
+    build: vue
     ports:
       - 8086:80
     environment:
