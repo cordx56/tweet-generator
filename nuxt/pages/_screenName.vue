@@ -249,7 +249,9 @@ export default {
         {
           name: 'og:image',
           content:
-            API_BASE_URL + '/v1/tweetgen/genImage/' + this.genForm.screenName,
+            API_BASE_URL +
+            '/v1/tweetgen/genImage/' +
+            (this.genForm.screenName ? this.genForm.screenName : ''),
         },
       ],
     }
