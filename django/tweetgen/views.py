@@ -175,8 +175,6 @@ class GenTextAPIView(APIView):
         else:
             text = markov.make_sentence(tries=100)
 
-        text = "".join(text.split())
-        logger.info('LOG:TEXTGEN:{}:{}'.format(screen_name, text))
         if text is None:
             return Response(
                 {
@@ -185,6 +183,8 @@ class GenTextAPIView(APIView):
                 },
                 status.HTTP_400_BAD_REQUEST
             )
+        text = "".join(text.split())
+        logger.info('LOG:TEXTGEN:{}:{}'.format(screen_name, text))
         tweet_link = 'https://twitter.com/intent/tweet?text=' + urllib.parse.quote(text + ' #tweetgen') + \
             '&url=' + urllib.parse.quote(settings.WEBPAGE_BASE_URL + '/' + screen_name)
         return Response(
