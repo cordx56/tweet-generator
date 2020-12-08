@@ -65,10 +65,10 @@ class AuthAndGenAPIView(APIView):
             return redirect('/?error_unknown=true')
         is_protected = tuser.json()['protected']
 
-        if User.objects.filter(screen_name=screen_name).exists():
-            user = User.objects.get(screen_name=screen_name)
+        if User.objects.filter(screen_name__iexact=screen_name).exists():
+            user = User.objects.get(screen_name__iexact=screen_name)
             if user.twitter_id != twitter_id:
-                User.objects.filter(screen_name=screen_name).delete()
+                User.objects.filter(screen_name__iexact=screen_name).delete()
         if User.objects.filter(twitter_id=twitter_id).exists():
             user = User.objects.get(twitter_id=twitter_id)
             user.screen_name = screen_name
@@ -126,8 +126,8 @@ class AuthAndDelAPIView(APIView):
 class GenTextAPIView(APIView):
     def get(self, request, screen_name):
         screen_name = screen_name.lstrip('@')
-        if User.objects.filter(screen_name=screen_name).exists():
-            user = User.objects.get(screen_name=screen_name)
+        if User.objects.filter(screen_name__iexact=screen_name).exists():
+            user = User.objects.get(screen_name__iexact=screen_name)
         else:
             return Response(
                 {
