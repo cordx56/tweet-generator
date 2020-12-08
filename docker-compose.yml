@@ -15,8 +15,11 @@ services:
     restart: always
     ports:
       - 8000:8000
+  nuxt:
+    build: nuxt
+    restart: always
   nginx:
-    build: vue
+    build: nginx
     ports:
       - 8086:80
     environment:
