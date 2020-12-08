@@ -6,18 +6,16 @@
     <p>
       This program uses
       <a href="https://github.com/jsvine/markovify" target="_blank">
-        jsvine/markovify
-      </a>
-      .
+        jsvine/markovify</a
+      >.
     </p>
     <p>
       <strong>
         Detail/Bug report:
         <span> </span>
         <a href="https://github.com/cordx56/tweet-generator" target="_blank">
-          cordx56/tweet-generator
-        </a>
-        .
+          cordx56/tweet-generator</a
+        >.
       </strong>
     </p>
 
@@ -73,7 +71,7 @@
     </b-card>
     <b-card
       v-if="$route.query.successfully_deleted"
-      header="失敗"
+      header="成功"
       border-variant="success"
       header-bg-variant="success"
       header-text-variant="white"
