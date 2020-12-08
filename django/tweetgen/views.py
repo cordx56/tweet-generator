@@ -162,7 +162,7 @@ class GenTextAPIView(APIView):
             startWithStr = " ".join(startWithStr)
             try:
                 text = markov.make_sentence_with_start(startWithStr, tries=100)
-            except KeyError:
+            except Exception:
                 return Response(
                     {
                         'status': False,
