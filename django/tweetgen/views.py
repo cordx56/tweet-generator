@@ -104,6 +104,7 @@ class AuthAndGenAPIView(APIView):
         genmodel.user = user
         genmodel.model = modeljson
         genmodel.save()
+        logger.info('LOG:MODELGEN:{}'.format(screen_name))
 
         return redirect('/' + screen_name + '?successfully_generated=true')
 
@@ -175,7 +176,7 @@ class GenTextAPIView(APIView):
             text = markov.make_sentence(tries=100)
 
         text = "".join(text.split())
-        logger.info('TEXTGEN:@{}:{}'.format(screen_name, text))
+        logger.info('LOG:TEXTGEN:{}:{}'.format(screen_name, text))
         if text is None:
             return Response(
                 {
