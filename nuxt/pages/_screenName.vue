@@ -120,18 +120,25 @@
           placeholder="@cordx56"
         />
       </b-form-group>
-      <p>オプション</p>
-      <b-form-group label="長さ">
-        <b-form-input
-          v-model="genForm.length"
-          type="number"
-          placeholder="最大文字数"
-        />
-      </b-form-group>
-      <b-form-group label="最初の単語">
-        <b-form-input v-model="genForm.startWith" placeholder="開始単語" />
-      </b-form-group>
-      <p>
+      <b-card
+        header="オプション"
+        border-variant="secondary"
+        header-bg-variant="secondary"
+        header-text-variant="white"
+        align="center"
+      >
+        <b-form-group label="長さ">
+          <b-form-input
+            v-model="genForm.length"
+            type="number"
+            placeholder="最大文字数"
+          />
+        </b-form-group>
+        <b-form-group label="最初の単語">
+          <b-form-input v-model="genForm.startWith" placeholder="開始単語" />
+        </b-form-group>
+      </b-card>
+      <p class="mt-3">
         <b-button type="submit" variant="primary">生成！</b-button>
       </p>
     </b-form>
