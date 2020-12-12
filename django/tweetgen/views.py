@@ -195,18 +195,29 @@ class GenTextAPIView(APIView):
             }
         )
 
+def wrap_text(img, text, font_size, max_length):
+    font = ImageFont.truetype("font.ttf", font_size)
+    draw = ImageDraw.Draw(img)
+    text_list = [text]
+    while max_length < draw.textsize(text_list[-1], font=font)[0]:
+        test_text = text_list[-1]
+        while max_length < draw.textsize(test_text, font=font)[0]:
+            test_text = test_text[:-1]
+        text_list.append(text_list[-1][len(test_text):])
+        text_list[-2] = test_text
+    return text_list
 
 def add_text_to_image(img, text, font_size, font_color, max_length=1000):
     font = ImageFont.truetype("font.ttf", font_size)
     draw = ImageDraw.Draw(img)
-    if draw.textsize(text, font=font)[0] > max_length:
-        while draw.textsize(text + '…', font=font)[0] > max_length:
-            text = text[:-1]
-        text = text + '…'
+    wrapped_text = wrap_text(img, text, font_size, max_length)
+    if 2 < len(wrapped_text):
+        wrapped_text = wrapped_text[:2]
+        wrapped_text[-1] += '…'
     w, h = img.size
-    position = (w / 2 - draw.textsize(text, font=font)[0] / 2, 300)
-    draw.text(position, text, font_color, font=font)
-
+    for i, t in enumerate(wrapped_text):
+        position = (w / 2 - draw.textsize(t, font=font)[0] / 2, 300 - (len(wrapped_text) - 1) * font_size / 2 + i * font_size)
+        draw.text(position, t, font_color, font=font)
     return img
 
 class GenImageAPIView(APIView):
