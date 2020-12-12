@@ -17,3 +17,6 @@ TWITTER_API_CONSEC = 'API key secret'
 `django/font.ttf`
 
 `nuxt/common.js` is defining `API_BASE_URL`.
+
+## Documentation
+https://docs.contour.so/cordx56/tweet-generator/getting-started
