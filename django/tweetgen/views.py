@@ -60,10 +60,10 @@ class AuthAndGenAPIView(APIView):
 
         try:
             tuser = oauth.get('https://api.twitter.com/1.1/users/show.json?screen_name=' + screen_name)
+            is_protected = tuser.json()['protected']
         except Exception as e:
             logger.warning(e)
             return redirect('/?error_unknown=true')
-        is_protected = tuser.json()['protected']
 
         if User.objects.filter(screen_name__iexact=screen_name).exists():
             user = User.objects.get(screen_name__iexact=screen_name)
