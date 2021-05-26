@@ -143,6 +143,14 @@
       </p>
     </b-form>
 
+    <h2 class="mt-4">生成数ランキング</h2>
+    <p>最近生成数が多いアカウントはこちら</p>
+    <ul>
+      <li v-for="user in ranking" :key="user.screen_name">
+        <a :href="'/' + user.screen_name">{{ user.screen_name }}</a>
+      </li>
+    </ul>
+
     <h2 class="mt-4">ツイートを学習させる</h2>
     <p>
       <b-button :href="signInLink" variant="primary">
@@ -197,12 +205,16 @@ export default {
         '/v1/tweetgen/authRedirect/?callback=' +
         API_BASE_URL +
         '/v1/tweetgen/authAndDel/',
+      ranking: [],
     }
   },
   computed: {
     faTwitter() {
       return faTwitter
     },
+  },
+  mounted() {
+    this.getRanking()
   },
   methods: {
     onGenerate(evt) {
@@ -227,6 +239,21 @@ export default {
           } else this.errorMsg = response.data.message
           this.loadingMsg = ''
           this.$router.replace({ path: '/' + this.genForm.screenName })
+        })
+        .catch((error) => {
+          if (error.response && error.response.data.message)
+            this.errorMsg = error.response.data.message
+          else this.errorMsg = String(error)
+          this.loadingMsg = ''
+        })
+    },
+    getRanking() {
+      this.$axios
+        .get(API_BASE_URL + '/v1/ranking/')
+        .then((response) => {
+          if (response.status) {
+            this.ranking = response.data.ranking
+          } else this.errorMsg = response.data.message
         })
         .catch((error) => {
           if (error.response && error.response.data.message)
