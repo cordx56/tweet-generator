@@ -14,4 +14,4 @@ class RankingGenerateAPIView(APIView):
         for q in query:
             user = User.objects.filter(id=q['target_user']).first()
             result.append({ 'screen_name': user.screen_name, 'count': q['count'] })
-        return Response(result)
+        return Response({ 'status': True, 'ranking': result })
