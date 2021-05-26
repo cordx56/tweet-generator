@@ -44,9 +44,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         unique=True,
         max_length=50,
     )
-    twitter_id = models.BigIntegerField(
+    twitter_id = models.CharField(
         'Twitter id',
         unique=True,
+        max_length=32,
     )
     is_staff = models.BooleanField(
         _('staff status'),
