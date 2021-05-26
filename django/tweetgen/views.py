@@ -8,6 +8,7 @@ from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.http import FileResponse
 from .models import GeneratedModel
+from ranking.models import TextGenHistory
 
 import logging
 from datetime import datetime
@@ -187,6 +188,13 @@ class GenTextAPIView(APIView):
         logger.info('LOG:TEXTGEN:{}:{}'.format(screen_name, text))
         tweet_link = 'https://twitter.com/intent/tweet?text=' + urllib.parse.quote(text + ' #tweetgen') + \
             '&url=' + urllib.parse.quote(settings.WEBPAGE_BASE_URL + '/' + screen_name)
+        text_gen_history = TextGenHistory()
+        text_gen_history.target_user = user
+        if request.user.is_authenticated:
+            text_gen_history.request_from = request.user
+        else:
+            text_gen_history.request_from = None
+        text_gen_history.save()
         return Response(
             {
                 'status': True,

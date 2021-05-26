@@ -19,4 +19,5 @@ from django.urls import path, include
 urlpatterns = [
     path('api/admin/', admin.site.urls),
     path('', include('tweetgen.urls')),
+    path('', include('ranking.urls')),
 ]
