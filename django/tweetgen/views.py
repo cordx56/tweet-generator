@@ -56,7 +56,7 @@ class AuthAndGenAPIView(APIView):
         oauth_token = token["oauth_token"]
         oauth_token_secret = token["oauth_token_secret"]
         oauth = OAuth1Session(settings.TWITTER_API_CONKEY, settings.TWITTER_API_CONSEC, oauth_token, oauth_token_secret)
-        twitter_id = int(token['user_id'])
+        twitter_id = token['user_id']
         screen_name = token['screen_name']
 
         try:
