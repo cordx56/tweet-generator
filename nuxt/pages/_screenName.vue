@@ -143,14 +143,6 @@
       </p>
     </b-form>
 
-    <h2 class="mt-4">生成数ランキング</h2>
-    <p>最近生成数が多いアカウントはこちら</p>
-    <ul>
-      <li v-for="user in ranking" :key="user.screen_name">
-        <a :href="'/' + user.screen_name">{{ user.screen_name }}</a>
-      </li>
-    </ul>
-
     <h2 class="mt-4">ツイートを学習させる</h2>
     <p>
       <b-button :href="signInLink" variant="primary">
@@ -170,6 +162,14 @@
       </b-button>
     </p>
     <p>こちらからあなたの学習済みデータを削除することができます。</p>
+
+    <h2 class="mt-4">生成数ランキング</h2>
+    <p>最近生成数が多いアカウントはこちら</p>
+    <ol>
+      <li v-for="user in ranking" :key="user.screen_name">
+        <a :href="'/' + user.screen_name">{{ user.screen_name }}</a>
+      </li>
+    </ol>
   </b-container>
 </template>
 
