@@ -12,10 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
-try:
-    from .local_settings import *
-except ImportError:
-    pass
+import requests
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True if str(os.environ.get('DEBUG')).lower() == 'true' else False
 
 ALLOWED_HOSTS = [
     'markovserver',
@@ -34,6 +33,11 @@ ALLOWED_HOSTS = [
     'localhost',
 ]
 
+# Fetch AWS local IPv4
+try:
+    ALLOWED_HOSTS.append(requests.get('http://169.254.169.254/latest/meta-data/local-ipv4/'))
+except Exception:
+    pass
 
 # Application definition
 
@@ -104,7 +108,7 @@ if not DEBUG:
         'NAME': os.environ.get('POSTGRES_DB'),
         'USER': os.environ.get('POSTGRES_USER'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': 'db',
+        'HOST': os.environ.get('POSTGRES_HOST'),
     }
 
 
@@ -185,10 +189,13 @@ LOGGING = {
 }
 
 # Sample config
-WEBPAGE_BASE_URL = 'https://tweetgen.cordx.net'
+WEBPAGE_BASE_URL = os.environ.get('WEBPAGE_BASE_URL')
 
 CORS_ALLOWED_ORIGINS = [
     WEBPAGE_BASE_URL,
     'http://localhost:3000',
     'http://localhost:8080',
 ]
+
+TWITTER_API_CONKEY = os.environ.get('TWITTER_API_CONKEY')
+TWITTER_API_CONSEC = os.environ.get('TWITTER_API_CONSEC')
