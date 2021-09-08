@@ -4,7 +4,7 @@ import markovify
 
 from . import twitter_tools
 
-mecabW = MeCab.Tagger("-r /dev/null -d /usr/lib/mecab/dic/mecab-ipadic-neologd -O wakati")
+mecabW = MeCab.Tagger("-r /dev/null -d /usr/lib/mecab/dic/ipadic-utf8 -O wakati")
 
 def filter_tweets(twts):
     replyMatch = re.compile(r"@\w+")

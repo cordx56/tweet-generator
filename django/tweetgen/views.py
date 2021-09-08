@@ -24,7 +24,7 @@ from PIL import Image, ImageDraw, ImageFont
 from . import generate_model
 
 logger = logging.getLogger('django')
-mec = MeCab.Tagger("-r /dev/null -d /usr/lib/mecab/dic/mecab-ipadic-neologd -O wakati")
+mec = MeCab.Tagger("-r /dev/null -d /usr/lib/mecab/dic/ipadic-utf8 -O wakati")
 
 class AuthRedirectAPIView(APIView):
     def get(self, request):
