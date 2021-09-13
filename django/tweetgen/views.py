@@ -7,21 +7,23 @@ from account.models import User
 from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.http import FileResponse
-from .models import GeneratedModel
+from .models import MarkovChainState3, ModelGenHistory
 from ranking.models import TextGenHistory
 
 import logging
 from datetime import datetime
 import urllib
+import random
 from requests_oauthlib import OAuth1Session
 import MeCab
-import markovify
 
 # Image draw
 import io
 from PIL import Image, ImageDraw, ImageFont
 
 from . import generate_model
+from .text import TweetgenNewlineText
+from .chain import SQLChainState3
 
 logger = logging.getLogger('django')
 mec = MeCab.Tagger("-r /dev/null -d /usr/lib/mecab/dic/ipadic-utf8 -O wakati")
@@ -78,20 +80,17 @@ class AuthAndGenAPIView(APIView):
             # user.access_token = oauth_token
             # user.access_token_secret = oauth_token_secret
             user.save()
-            login(request, user)
         else:
             user = User.objects.create_user(screen_name, twitter_id, is_protected)
             # don't save oauth token
             # user.access_token = oauth_token
             # user.access_token_secret = oauth_token_secret
             user.save()
-            login(request, user)
+        login(request, user)
 
-        if GeneratedModel.objects.filter(user=user).exists():
-            genmodel = GeneratedModel.objects.get(user=user)
-            if datetime.now().timestamp() - genmodel.date.timestamp() < 60 * 60 * 24:
-                return redirect('/?error_24hour_constraint=true')
-            GeneratedModel.objects.filter(user=user).delete()
+        last_generated = ModelGenHistory.objects.filter(user=user).order_by('gen_date').reverse().first()
+        if last_generated and datetime.now().timestamp() - last_generated.gen_date.timestamp() < 60 * 60 * 24:
+            return redirect('/?error_24hour_constraint=true')
 
         # Generate model
         params = { "screen_name": screen_name, "trim_user": 1 }
@@ -100,11 +99,18 @@ class AuthAndGenAPIView(APIView):
         except Exception as e:
             logger.warning(e)
             return redirect('/?error_unknown=true')
-        modeljson = model.to_json()
-        genmodel = GeneratedModel()
-        genmodel.user = user
-        genmodel.model = modeljson
-        genmodel.save()
+        markov_chain_list = []
+        for state, nexts in model.chain.model.items():
+            for next, value in nexts.items():
+                markov_chain = MarkovChainState3()
+                markov_chain.user = user
+                markov_chain.state0 = state[0]
+                markov_chain.state1 = state[1]
+                markov_chain.state2 = state[2]
+                markov_chain.next = next
+                markov_chain.value = value
+                markov_chain_list.append(markov_chain)
+        MarkovChainState3.objects.bulk_create(markov_chain_list)
         logger.info('LOG:MODELGEN:{}'.format(screen_name))
 
         return redirect('/' + screen_name + '?successfully_generated=true')
@@ -116,46 +122,50 @@ class AuthAndDelAPIView(APIView):
         except Exception as e:
             logger.warning(e)
             return redirect('/?error_unknown=true')
-        twitter_id = int(token['user_id'])
+        twitter_id = token['user_id']
         if User.objects.filter(twitter_id=twitter_id).exists():
             user = User.objects.get(twitter_id=twitter_id)
-            if GeneratedModel.objects.filter(user=user).exists():
-                GeneratedModel.objects.filter(user=user).delete()
+            if MarkovChainState3.objects.filter(user=user).exists():
+                MarkovChainState3.objects.filter(user=user).delete()
                 return redirect('/' + '?successfully_deleted=true')
         return redirect('/' + '?error_unregistered=true')
 
 class GenTextAPIView(APIView):
-    def get(self, request, screen_name):
-        screen_name = screen_name.lstrip('@')
-        if User.objects.filter(screen_name__iexact=screen_name).exists():
-            user = User.objects.get(screen_name__iexact=screen_name)
+    def get(self, request, screen_names=''):
+        user_ids = []
+        if 0 < len(screen_names):
+            screen_name_list = list(map(lambda x: x.lstrip('@'), screen_names.split(',')))
+            for screen_name in screen_name_list:
+                if User.objects.filter(screen_name__iexact=screen_name).exists():
+                    user = User.objects.get(screen_name__iexact=screen_name)
+                else:
+                    return Response(
+                        {
+                            'status': False,
+                            'message': 'Learned model file not found. まずはじめにツイートを学習させてください。'
+                        },
+                        status.HTTP_404_NOT_FOUND
+                    )
+                if not MarkovChainState3.objects.filter(user=user).exists():
+                    return Response(
+                        {
+                            'status': False,
+                            'message': 'Learned model file not found. まずはじめにツイートを学習させてください。'
+                        },
+                        status.HTTP_404_NOT_FOUND
+                    )
+                if user.is_protected and (not request.user.is_authenticated or request.user.id != user.id):
+                    return Response(
+                        {
+                            'status': False,
+                            'message': '鍵アカウントでテキストを生成する場合、ログインが必要です。アカウントの持ち主のみが生成可能です。'
+                        },
+                        status.HTTP_401_UNAUTHORIZED
+                    )
+                user_ids.append(user.id)
         else:
-            return Response(
-                {
-                    'status': False,
-                    'message': 'Learned model file not found. まずはじめにツイートを学習させてください。'
-                },
-                status.HTTP_404_NOT_FOUND
-            )
-        if user.is_protected and (not request.user.is_authenticated or request.user.id != user.id):
-            return Response(
-                {
-                    'status': False,
-                    'message': '鍵アカウントでテキストを生成する場合、ログインが必要です。アカウントの持ち主のみが生成可能です。'
-                },
-                status.HTTP_401_UNAUTHORIZED
-            )
-        if GeneratedModel.objects.filter(user=user).exists():
-            model = GeneratedModel.objects.get(user=user)
-        else:
-            return Response(
-                {
-                    'status': False,
-                    'message': 'Learned model file not found. まずはじめにツイートを学習させてください。'
-                },
-                status.HTTP_404_NOT_FOUND
-            )
-        markov = markovify.Text.from_json(model.model)
+            user_ids = random.sample(list(map(lambda x: x.id, User.objects.filter(is_protected=False).all())), 100)
+        markov = TweetgenNewlineText.from_sql(user_ids)
         if request.query_params.get('startWith') and 0 < len(request.query_params['startWith'].strip()):
             startWithStr = mec.parse(request.query_params['startWith']).strip().split()
             if markov.state_size < len(startWithStr):
@@ -184,17 +194,17 @@ class GenTextAPIView(APIView):
                 },
                 status.HTTP_400_BAD_REQUEST
             )
-        text = "".join(text.split())
-        logger.info('LOG:TEXTGEN:{}:{}'.format(screen_name, text))
+        logger.info('LOG:TEXTGEN:{}:{}'.format(screen_names, text))
         tweet_link = 'https://twitter.com/intent/tweet?text=' + urllib.parse.quote(text + ' #tweetgen') + \
-            '&url=' + urllib.parse.quote(settings.WEBPAGE_BASE_URL + '/' + screen_name)
-        text_gen_history = TextGenHistory()
-        text_gen_history.target_user = user
-        if request.user.is_authenticated:
-            text_gen_history.request_from = request.user
-        else:
-            text_gen_history.request_from = None
-        text_gen_history.save()
+            '&url=' + urllib.parse.quote(settings.WEBPAGE_BASE_URL + '/' + screen_names)
+        if len(user_ids) == 1:
+            text_gen_history = TextGenHistory()
+            text_gen_history.target_user_id = user_ids[0]
+            if request.user.is_authenticated:
+                text_gen_history.request_from = request.user
+            else:
+                text_gen_history.request_from = None
+            text_gen_history.save()
         return Response(
             {
                 'status': True,
