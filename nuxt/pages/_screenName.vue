@@ -116,6 +116,7 @@
       <b-form-group label="アカウント名">
         <b-form-input
           v-model="genForm.screenName"
+          required
           placeholder="@cordx56"
         />
       </b-form-group>
