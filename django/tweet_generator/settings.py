@@ -27,17 +27,17 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if str(os.environ.get('DEBUG')).lower() == 'true' else False
 
-ALLOWED_HOSTS = [
-    'markovserver',
-    '127.0.0.1',
-    'localhost',
-]
+BACKEND_HOSTNAME = os.environ.get('BACKEND_HOSTNAME')
 
-# Fetch AWS local IPv4
-try:
-    ALLOWED_HOSTS.append(requests.get('http://169.254.169.254/latest/meta-data/local-ipv4/'))
-except Exception:
-    pass
+if DEBUG:
+    ALLOWED_HOSTS = [
+        BACKEND_HOSTNAME,
+        'localhost',
+    ]
+else:
+    ALLOWED_HOSTS = [
+        BACKEND_HOSTNAME,
+    ]
 
 # Application definition
 
@@ -191,11 +191,16 @@ LOGGING = {
 # Sample config
 WEBPAGE_BASE_URL = os.environ.get('WEBPAGE_BASE_URL')
 
-CORS_ALLOWED_ORIGINS = [
-    WEBPAGE_BASE_URL,
-    'http://localhost:3000',
-    'http://localhost:8080',
-]
+if DEBUG:
+    CORS_ALLOWED_ORIGINS = [
+        WEBPAGE_BASE_URL,
+        'http://localhost:3000',
+        'http://localhost:8080',
+    ]
+else:
+    CORS_ALLOWED_ORIGINS = [
+        WEBPAGE_BASE_URL,
+    ]
 
 TWITTER_API_CONKEY = os.environ.get('TWITTER_API_CONKEY')
 TWITTER_API_CONSEC = os.environ.get('TWITTER_API_CONSEC')
