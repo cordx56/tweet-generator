@@ -1,6 +1,5 @@
 from django.db import models
 from account.models import User
-from django.utils import timezone
 
 class GeneratedModel(models.Model):
     user = models.OneToOneField(
@@ -19,7 +18,3 @@ class MarkovChainState3(models.Model):
     state2 = models.TextField(db_index=True)
     next = models.TextField()
     value = models.IntegerField()
-
-class ModelGenHistory(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    gen_date = models.DateTimeField('generate date', default=timezone.now)
