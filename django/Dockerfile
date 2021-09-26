@@ -1,7 +1,7 @@
 FROM python:3.8
 
-RUN apt update && \
-    apt install -y mecab libmecab-dev mecab-ipadic-utf8 swig
+RUN apt-get update && \
+    apt-get install -y mecab libmecab-dev mecab-ipadic-utf8 swig
 #RUN git clone --depth=1 https://github.com/neologd/mecab-ipadic-neologd && \
 #    cd ./mecab-ipadic-neologd && \
 #    ./bin/install-mecab-ipadic-neologd -y -p /var/lib/mecab/dic/mecab-ipadic-neologd && \
