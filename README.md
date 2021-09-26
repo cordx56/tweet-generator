@@ -10,6 +10,11 @@ Set `django/tweet_generator/local_settings.py`. See below.
 ```python
 DEBUG = False
 SECRET_KEY = 'secret'
+POSTGRES_DB = 'Your DB name in PostgreSQL'
+POSTGRES_USER = 'Your username in PostgreSQL'
+POSTGRES_PASSWORD = 'Your password in PostgreSQL'
+POSTGRES_HOST = 'postgres'
+WEBPAGE_BASE_URL = 'localhost:3000'
 TWITTER_API_CONKEY = 'API key'
 TWITTER_API_CONSEC = 'API key secret'
 ```
