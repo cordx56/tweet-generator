@@ -116,7 +116,7 @@ class AuthAndDelAPIView(APIView):
         except Exception as e:
             logger.warning(e)
             return redirect('/?error_unknown=true')
-        twitter_id = int(token['user_id'])
+        twitter_id = token['user_id']
         if User.objects.filter(twitter_id=twitter_id).exists():
             user = User.objects.get(twitter_id=twitter_id)
             if GeneratedModel.objects.filter(user=user).exists():
