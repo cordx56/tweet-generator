@@ -9,6 +9,10 @@ on:
     paths:
       - '.github/workflows/build-img-django.yml'
       - 'django/**'
+  pull_request:
+    paths:
+      - '.github/workflows/build-img-django.yml'
+      - 'django/**'
 
 jobs:
   build:

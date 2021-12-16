@@ -9,6 +9,10 @@ on:
     paths:
       - '.github/workflows/build-img-nuxt.yml'
       - 'nuxt/**'
+  pull_request:
+    paths:
+      - '.github/workflows/build-img-nuxt.yml'
+      - 'nuxt/**'
 
 jobs:
   build:
