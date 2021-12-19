@@ -1,0 +1,27 @@
+name: Lint / nuxt
+
+on:
+  push:
+    branches: master
+  pull_request:
+    paths:
+      - '.github/workflows/lint-nuxt.yml'
+      - 'nuxt/**'
+
+defaults:
+  run:
+    working-directory: ./nuxt
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint ESLint
+        run: yarn lint:js
