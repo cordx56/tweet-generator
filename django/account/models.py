@@ -43,6 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         'screen name',
         unique=True,
         max_length=50,
+        db_index=True,
     )
     twitter_id = models.CharField(
         'Twitter id',
