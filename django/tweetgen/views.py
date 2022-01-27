@@ -7,6 +7,7 @@ from account.models import User
 from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.http import FileResponse
+from django.core.exceptions import ObjectDoesNotExist
 from .models import GeneratedModel
 from ranking.models import TextGenHistory
 
@@ -126,36 +127,90 @@ class AuthAndDelAPIView(APIView):
 
 class GenTextAPIView(APIView):
     def get(self, request, screen_name):
-        screen_name = screen_name.lstrip('@')
-        if User.objects.filter(screen_name__iexact=screen_name).exists():
-            user = User.objects.get(screen_name__iexact=screen_name)
+        formatted_screen_name = ''
+        screen_name_list = screen_name.split(',')
+        if 10 < len(screen_name_list):
+            return Response(
+                {
+                    'status': False,
+                    'message': '10人を超えるモデルの結合はできません。',
+                },
+                status.HTTP_400_BAD_REQUEST,
+            )
+
+        model_list = []
+        weight_list = []
+        for screen_name in screen_name_list:
+            weight = 1
+            screen_name = screen_name.split(':')
+            if 1 < len(screen_name):
+                try:
+                    weight = float(screen_name[1])
+                except ValueError:
+                    return Response(
+                        {
+                            'status': False,
+                            'message': '不正なリクエストです。',
+                        },
+                        status.HTTP_400_BAD_REQUEST,
+                    )
+            screen_name = screen_name[0]
+            screen_name = screen_name.lstrip('@')
+            if 0 < len(formatted_screen_name):
+                formatted_screen_name += ','
+            formatted_screen_name += screen_name
+            if weight != 1:
+                formatted_screen_name += ":{}".format(weight)
+
+            # Fetch user data
+            try:
+                user = User.objects.get(screen_name__iexact=screen_name)
+            except ObjectDoesNotExist:
+                return Response(
+                    {
+                        'status': False,
+                        'message': 'Learned model file not found. まずはじめにツイートを学習させてください。'
+                    },
+                    status.HTTP_404_NOT_FOUND
+                )
+            if user.is_protected and (not request.user.is_authenticated or request.user.id != user.id):
+                return Response(
+                    {
+                        'status': False,
+                        'message': '鍵アカウントでテキストを生成する場合、ログインが必要です。アカウントの持ち主のみが生成可能です。'
+                    },
+                    status.HTTP_401_UNAUTHORIZED
+                )
+
+            # Fetch markov-chain model
+            try:
+                model = GeneratedModel.objects.get(user=user)
+            except ObjectDoesNotExist:
+                return Response(
+                    {
+                        'status': False,
+                        'message': 'Learned model file not found. まずはじめにツイートを学習させてください。'
+                    },
+                    status.HTTP_404_NOT_FOUND
+                )
+            markov = markovify.Text.from_json(model.model)
+
+            model_list.append(markov)
+            weight_list.append(weight)
+        if 1 < len(model_list):
+            markov = markovify.combine(model_list, weight_list)
+        elif len(model_list) == 1:
+            markov = model_list[0]
         else:
             return Response(
                 {
                     'status': False,
-                    'message': 'Learned model file not found. まずはじめにツイートを学習させてください。'
+                    'message': '不正なリクエストです。',
                 },
-                status.HTTP_404_NOT_FOUND
+                status.HTTP_400_BAD_REQUEST,
             )
-        if user.is_protected and (not request.user.is_authenticated or request.user.id != user.id):
-            return Response(
-                {
-                    'status': False,
-                    'message': '鍵アカウントでテキストを生成する場合、ログインが必要です。アカウントの持ち主のみが生成可能です。'
-                },
-                status.HTTP_401_UNAUTHORIZED
-            )
-        if GeneratedModel.objects.filter(user=user).exists():
-            model = GeneratedModel.objects.get(user=user)
-        else:
-            return Response(
-                {
-                    'status': False,
-                    'message': 'Learned model file not found. まずはじめにツイートを学習させてください。'
-                },
-                status.HTTP_404_NOT_FOUND
-            )
-        markov = markovify.Text.from_json(model.model)
+
+
         if request.query_params.get('startWith') and 0 < len(request.query_params['startWith'].strip()):
             startWithStr = mec.parse(request.query_params['startWith']).strip().split()
             if markov.state_size < len(startWithStr):
@@ -187,7 +242,7 @@ class GenTextAPIView(APIView):
         text = "".join(text.split())
         logger.info('LOG:TEXTGEN:{}:{}'.format(screen_name, text))
         tweet_link = 'https://twitter.com/intent/tweet?text=' + urllib.parse.quote(text + ' #tweetgen') + \
-            '&url=' + urllib.parse.quote(settings.WEBPAGE_BASE_URL + '/' + screen_name)
+            '&url=' + urllib.parse.quote(settings.WEBPAGE_BASE_URL + '/' + formatted_screen_name)
         text_gen_history = TextGenHistory()
         text_gen_history.target_user = user
         if request.user.is_authenticated:
