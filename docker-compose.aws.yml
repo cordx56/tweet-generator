@@ -1,7 +1,7 @@
 version: "3"
 services:
   markovserver:
-    image: ghcr.io/sksat/tweet-generator/django:master
+    image: ghcr.io/cordx56/tweet-generator/django:master
     volumes:
       - ./log/gunicorn:/app/log/gunicorn
     command: >
@@ -14,7 +14,7 @@ services:
       TZ: Asia/Tokyo
     restart: always
   nuxt:
-    image: ghcr.io/sksat/tweet-generator/nuxt:master
+    image: ghcr.io/cordx56/tweet-generator/nuxt:master
     restart: always
   nginx:
     build: nginx
