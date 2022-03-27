@@ -1,7 +1,13 @@
 <template>
   <b-container class="home">
     <h1 class="my-3">Tweet generator</h1>
-    <p>{{ language.match(/ja/) ? 'ツイートを学習して本人っぽい文章を生成するよ！' : 'Learn your tweets and generate tweet like your tweet!' }}</p>
+    <p>
+      {{
+        language.match(/ja/)
+          ? 'ツイートを学習して本人っぽい文章を生成するよ！'
+          : 'Learn your tweets and generate tweet like your tweet!'
+      }}
+    </p>
     <p>マルコフ連鎖によるツイート自動生成プログラム</p>
     <p>
       This program uses
@@ -113,7 +119,9 @@
     </b-card>
 
     <b-form class="mt-3" @submit="onGenerate">
-      <b-form-group v-bind:label="language.match(/ja/) ? 'アカウント名' : 'Screen name'">
+      <b-form-group
+        :label="language.match(/ja/) ? 'アカウント名' : 'Screen name'"
+      >
         <b-form-input
           v-model="genForm.screenName"
           required
@@ -121,7 +129,7 @@
         />
       </b-form-group>
       <b-card
-        header="オプション"
+        :header="language.match(/ja/) ? 'オプション' : 'Option'"
         border-variant="secondary"
         header-bg-variant="secondary"
         header-text-variant="white"
@@ -139,7 +147,9 @@
         </b-form-group>
       </b-card>
       <p class="mt-3">
-        <b-button type="submit" variant="primary">{{ language.match(/ja/) ? '生成！' : 'Generate!' }}</b-button>
+        <b-button type="submit" variant="primary">{{
+          language.match(/ja/) ? '生成！' : 'Generate!'
+        }}</b-button>
       </p>
     </b-form>
 
@@ -156,7 +166,8 @@
       ログインしてツイートを学習させると、あなたや他の人もあなたのツイートを生成して遊べるようになります。
     </p>
     <p>
-      Once you let us learn your tweet, you and others will be able to generate tweet like your tweet.
+      Once you let us learn your tweet, you and others will be able to generate
+      tweet like your tweet.
     </p>
     <p>
       <b-button variant="danger" size="sm" :href="deleteLink">
@@ -211,7 +222,7 @@ export default {
     },
   },
   mounted() {
-    //this.getRanking()
+    // this.getRanking()
     this.setLanguage()
   },
   methods: {
