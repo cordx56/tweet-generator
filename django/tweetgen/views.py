@@ -1,3 +1,4 @@
+from typing import List
 # from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -13,6 +14,7 @@ from ranking.models import TextGenHistory
 
 import logging
 from datetime import datetime
+import re
 import urllib
 from requests_oauthlib import OAuth1Session
 import MeCab
@@ -46,6 +48,17 @@ def twitter_fetch_token(request):
     oauth.parse_authorization_response(request.build_absolute_uri())
     token = oauth.fetch_access_token("https://api.twitter.com/oauth/access_token")
     return token
+
+def join_text(words: List[str]) -> str:
+    buffer = ""
+    prog = re.compile("[\u0021-\u052f]")
+    for i in range(0, len(words) - 1):
+        if prog.match(words[i]) or prog.match(words[i + 1]):
+            buffer += words[i] + " "
+        else:
+            buffer += words[i]
+    buffer += words[len(words) - 1]
+    return buffer
 
 class AuthAndGenAPIView(APIView):
     def get(self, request):
@@ -239,7 +252,7 @@ class GenTextAPIView(APIView):
                 },
                 status.HTTP_400_BAD_REQUEST
             )
-        text = "".join(text.split())
+        text = join_text(text.split())
         logger.info('LOG:TEXTGEN:{}:{}'.format(screen_name, text))
         tweet_link = 'https://twitter.com/intent/tweet?text=' + urllib.parse.quote(text + ' #tweetgen') + \
             '&url=' + urllib.parse.quote(settings.WEBPAGE_BASE_URL + '/' + formatted_screen_name)
