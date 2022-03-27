@@ -1,7 +1,7 @@
 <template>
   <b-container class="home">
     <h1 class="my-3">Tweet generator</h1>
-    <p>ツイートを学習して本人っぽい文章を生成するよ！</p>
+    <p>{{ language.match(/ja/) ? 'ツイートを学習して本人っぽい文章を生成するよ！' : 'Learn your tweets and generate tweet like your tweet!' }}</p>
     <p>マルコフ連鎖によるツイート自動生成プログラム</p>
     <p>
       This program uses
@@ -32,7 +32,7 @@
         <b-button variant="primary" size="sm" :href="tweetLink" target="_blank">
           <font-awesome-icon :icon="faTwitter"></font-awesome-icon>
           <span> </span>
-          ツイート
+          Tweet
         </b-button>
       </b-card-text>
     </b-card>
@@ -113,7 +113,7 @@
     </b-card>
 
     <b-form class="mt-3" @submit="onGenerate">
-      <b-form-group label="アカウント名">
+      <b-form-group v-bind:label="language.match(/ja/) ? 'アカウント名' : 'Screen name'">
         <b-form-input
           v-model="genForm.screenName"
           required
@@ -139,11 +139,12 @@
         </b-form-group>
       </b-card>
       <p class="mt-3">
-        <b-button type="submit" variant="primary">生成！</b-button>
+        <b-button type="submit" variant="primary">{{ language.match(/ja/) ? '生成！' : 'Generate!' }}</b-button>
       </p>
     </b-form>
 
     <h2 class="mt-4">ツイートを学習させる</h2>
+    <p>Learn your tweet</p>
     <p>
       <b-button :href="signInLink" variant="primary">
         <font-awesome-icon :icon="faTwitter"></font-awesome-icon>
@@ -155,6 +156,9 @@
       ログインしてツイートを学習させると、あなたや他の人もあなたのツイートを生成して遊べるようになります。
     </p>
     <p>
+      Once you let us learn your tweet, you and others will be able to generate tweet like your tweet.
+    </p>
+    <p>
       <b-button variant="danger" size="sm" :href="deleteLink">
         <font-awesome-icon :icon="faTwitter"></font-awesome-icon>
         <span> </span>
@@ -162,14 +166,6 @@
       </b-button>
     </p>
     <p>こちらからあなたの学習済みデータを削除することができます。</p>
-
-    <h2 class="mt-4">生成数ランキング</h2>
-    <p>最近生成数が多いアカウントはこちら</p>
-    <ol>
-      <li v-for="user in ranking" :key="user.screen_name">
-        <a :href="'/' + user.screen_name">{{ user.screen_name }}</a>
-      </li>
-    </ol>
   </b-container>
 </template>
 
@@ -206,6 +202,7 @@ export default {
         API_BASE_URL +
         '/v1/tweetgen/authAndDel/',
       ranking: [],
+      language: '',
     }
   },
   computed: {
@@ -214,7 +211,8 @@ export default {
     },
   },
   mounted() {
-    this.getRanking()
+    //this.getRanking()
+    this.setLanguage()
   },
   methods: {
     onGenerate(evt) {
@@ -261,6 +259,9 @@ export default {
           else this.errorMsg = String(error)
           this.loadingMsg = ''
         })
+    },
+    setLanguage() {
+      this.language = navigator.language
     },
   },
   head() {
