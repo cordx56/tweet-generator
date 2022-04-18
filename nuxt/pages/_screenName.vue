@@ -38,7 +38,7 @@
         <b-button variant="primary" size="sm" :href="tweetLink" target="_blank">
           <font-awesome-icon :icon="faTwitter"></font-awesome-icon>
           <span> </span>
-          {{ language.match(/ja/) ? 'ツイート' : Tweet }}
+          {{ language.match(/ja/) ? 'ツイート' : 'Tweet' }}
         </b-button>
       </b-card-text>
     </b-card>
