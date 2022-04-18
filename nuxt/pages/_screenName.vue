@@ -38,7 +38,7 @@
         <b-button variant="primary" size="sm" :href="tweetLink" target="_blank">
           <font-awesome-icon :icon="faTwitter"></font-awesome-icon>
           <span> </span>
-          Tweet
+          {{ language.match(/ja/) ? 'ツイート' : Tweet }}
         </b-button>
       </b-card-text>
     </b-card>
@@ -128,23 +128,29 @@
           placeholder="@cordx56"
         />
       </b-form-group>
-      <b-card
-        :header="language.match(/ja/) ? 'オプション' : 'Option'"
-        border-variant="secondary"
-        header-bg-variant="secondary"
-        header-text-variant="white"
-        align="center"
-      >
-        <b-form-group label="長さ">
-          <b-form-input
-            v-model="genForm.length"
-            type="number"
-            placeholder="最大文字数"
-          />
-        </b-form-group>
-        <b-form-group label="最初の単語">
-          <b-form-input v-model="genForm.startWith" placeholder="開始単語" />
-        </b-form-group>
+      <b-card no-body border-variant="secondary" align="center">
+        <b-card-header header-tag="header" class="p-1" role="tab">
+          <b-button v-b-toggle.option-form block variant="secondary">{{
+            language.match(/ja/) ? 'オプション' : 'Option'
+          }}</b-button>
+        </b-card-header>
+        <b-collapse id="option-form">
+          <b-card-body>
+            <b-form-group label="長さ">
+              <b-form-input
+                v-model="genForm.length"
+                type="number"
+                placeholder="最大文字数"
+              />
+            </b-form-group>
+            <b-form-group label="最初の単語">
+              <b-form-input
+                v-model="genForm.startWith"
+                placeholder="開始単語"
+              />
+            </b-form-group>
+          </b-card-body>
+        </b-collapse>
       </b-card>
       <p class="mt-3">
         <b-button type="submit" variant="primary">{{
